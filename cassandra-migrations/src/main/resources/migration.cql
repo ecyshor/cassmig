@@ -1,4 +1,4 @@
-CREATE TABLE migrations (
+CREATE TABLE %s.migrations (
   schema varchar,
   order bigint,
   time_executed timestamp,
