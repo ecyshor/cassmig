@@ -1,8 +1,6 @@
 package com.ecyshor.cassmig.exception;
 
-import org.omg.SendingContext.RunTime;
-
-public class MissingRequiredConfiguration extends Exception {
+public class MissingRequiredConfiguration extends RuntimeException {
 
 	public MissingRequiredConfiguration(String message) {
 		super(message);

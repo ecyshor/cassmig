@@ -1,5 +1,7 @@
 package com.ecyshor.cassmig;
 
+import com.ecyshor.cassmig.exception.InvalidMigrationsException;
+import com.ecyshor.cassmig.exception.MissingRequiredConfiguration;
 import com.ecyshor.cassmig.model.MigrationFile;
 import org.junit.Test;
 
@@ -40,6 +42,54 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 		String migration = migrationFile.getCommands().get(1);
 		assertThat(keyspaceCommand, equalTo("USE test;"));
 		assertThat(migration, equalTo("migrate this is a test;"));
+	}
+
+	@Test(expected = MissingRequiredConfiguration.class)
+	public void shouldThrowExceptionWhenMissingConfigurationInFile() throws Throwable {
+		URL resource = this.getClass().getClassLoader().getResource("migrations/file_without_order.cql");
+		assert resource != null;
+		File file = new File(resource.toURI());
+		try {
+			transformMigrationFileToMigration(file);
+		} catch (Exception e) {
+			throw e.getCause();
+		}
+	}
+
+	@Test(expected = MissingRequiredConfiguration.class)
+	public void shouldThrowExceptionWhenMissingValueForConfigurationInFile() throws Throwable {
+		URL resource = this.getClass().getClassLoader().getResource("migrations/file_with_empty_order.cql");
+		assert resource != null;
+		File file = new File(resource.toURI());
+		try {
+			transformMigrationFileToMigration(file);
+		} catch (Exception e) {
+			throw e.getCause();
+		}
+	}
+
+	@Test(expected = MissingRequiredConfiguration.class)
+	public void shouldThrowExceptionWhenMissingMigrationStart() throws Throwable {
+		URL resource = this.getClass().getClassLoader().getResource("migrations/file_without_start_migration.cql");
+		assert resource != null;
+		File file = new File(resource.toURI());
+		try {
+			transformMigrationFileToMigration(file);
+		} catch (Exception e) {
+			throw e.getCause();
+		}
+	}
+
+	@Test(expected = MissingRequiredConfiguration.class)
+	public void shouldThrowExceptionWhenMissingMigrationEnd() throws Throwable {
+		URL resource = this.getClass().getClassLoader().getResource("migrations/file_without_end_migration.cql");
+		assert resource != null;
+		File file = new File(resource.toURI());
+		try {
+			transformMigrationFileToMigration(file);
+		} catch (Exception e) {
+			throw e.getCause();
+		}
 	}
 
 }

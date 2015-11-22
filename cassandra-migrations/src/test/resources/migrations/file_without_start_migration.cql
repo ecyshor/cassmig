@@ -1,0 +1,7 @@
+--order=1
+--keyspace=test
+--description=Description
+
+migrate this is a test;
+
+--end

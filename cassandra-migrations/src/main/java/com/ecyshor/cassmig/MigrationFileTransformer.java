@@ -65,9 +65,10 @@ public class MigrationFileTransformer {
 	private List<String> extractMigrationLines(List<String> lines) {
 		List<String> migrationLines = Lists.newArrayList();
 		boolean startedMigrationLines = false;
+		boolean migrationEnded = false;
 		for (String line : lines) {
 			String trimmedLine = line.trim();
-			boolean migrationEnded = trimmedLine.equalsIgnoreCase(CONFIGURATION_OPTION_PREFIX + MIGRATION_END_MARK);
+			migrationEnded = trimmedLine.equalsIgnoreCase(CONFIGURATION_OPTION_PREFIX + MIGRATION_END_MARK);
 			if (migrationEnded) {
 				break;
 			}
@@ -77,6 +78,12 @@ public class MigrationFileTransformer {
 			if (trimmedLine.equalsIgnoreCase(CONFIGURATION_OPTION_PREFIX + MIGRATION_START_MARK)) {
 				startedMigrationLines = true;
 			}
+		}
+		if (!startedMigrationLines) {
+			throw new MissingRequiredConfiguration("The migration starting flag was not found, no migration configured in file.");
+		}
+		if (!migrationEnded) {
+			throw new MissingRequiredConfiguration("The migration end flag was not found, migration misconfigured in file.");
 		}
 		return migrationLines;
 	}
