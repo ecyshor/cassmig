@@ -1,6 +1,7 @@
 package com.ecyshor.cassmig;
 
-import com.ecyshor.cassmig.exception.InvalidMigrations;
+import com.ecyshor.cassmig.exception.InvalidDataException;
+import com.ecyshor.cassmig.exception.InvalidMigrationsException;
 import com.ecyshor.cassmig.exception.MissingRequiredConfiguration;
 import com.ecyshor.cassmig.model.MigrationFile;
 import com.google.common.base.Throwables;
@@ -25,6 +26,7 @@ public class MigrationFileTransformer {
 	private static final String CONFIGURATION_OPTION_PREFIX = "--";
 	private static final String MIGRATION_INIT_KEY = "migration_init";
 	private static final String KEYSPACE_KEY = "keyspace";
+	private static final String DESCRIPTION_KEY = "description";
 	private static final String ORDER_KEY = "order";
 	private static final String VALUE_SEPARATOR = "=";
 	private boolean foundInitFile = false;
@@ -36,7 +38,7 @@ public class MigrationFileTransformer {
 			migrations.add(migration);
 		}
 		if (!foundInitFile) {
-			throw new InvalidMigrations("The initialization file was not provided. Please provide it.");
+			throw new InvalidMigrationsException("The initialization file was not provided. Please provide it.");
 		}
 		return migrations;
 	}
@@ -50,9 +52,13 @@ public class MigrationFileTransformer {
 		} catch (MissingRequiredConfiguration missingRequiredConfiguration) {
 			String exceptionMessage = "Invalid file " + migrationFile.getName() + " for migration";
 			LOGGER.error(exceptionMessage, missingRequiredConfiguration);
-			throw new InvalidMigrations(exceptionMessage, missingRequiredConfiguration);
+			throw new InvalidMigrationsException(exceptionMessage, missingRequiredConfiguration);
 		} catch (FileNotFoundException e) {
 			throw Throwables.propagate(e);
+		} catch (InvalidDataException ex) {
+			String exceptionMessage = "Invalid file " + migrationFile.getName() + " for migration";
+			LOGGER.error(exceptionMessage, ex);
+			throw new InvalidMigrationsException(exceptionMessage, ex);
 		}
 	}
 
@@ -120,9 +126,10 @@ public class MigrationFileTransformer {
 			List<String> migrations = StatementBuilder.buildStatementsFromLines(migrationLines);
 			List<String> migrationTableStatements = StatementBuilder.buildStatementsFromLines(migrationTable);
 			String keyspace = findValueForKey(configurationLines, KEYSPACE_KEY);
+			String description = findValueForKey(configurationLines, DESCRIPTION_KEY);
 			migrationTableStatements.set(0, String.format(migrationTableStatements.get(0), keyspace));
 			migrations.addAll(migrationTableStatements);
-			return new MigrationFile(-1, getMd5Sum(configurationLines, migrationLines), migrations);
+			return new MigrationFile(-1, description, migrations);
 		} catch (IOException e) {
 			String exceptionMessage = "Exception while trying to read the schema for the migration table. The migrations will be aborted.";
 			LOGGER.error(exceptionMessage, e);
@@ -133,12 +140,12 @@ public class MigrationFileTransformer {
 	private MigrationFile transformFileContentToNormalMigrationFile(List<String> configurationLines, List<String> migrationLines)
 			throws MissingRequiredConfiguration {
 		List<String> statements = StatementBuilder.buildStatementsFromLines(migrationLines);
-		String md5Sum = getMd5Sum(configurationLines, migrationLines);
 		int order = findValueForKey(configurationLines, ORDER_KEY, Integer.class);
 		String keyspace = findValueForKey(configurationLines, KEYSPACE_KEY);
+		String description = findValueForKey(configurationLines, DESCRIPTION_KEY);
 		if (order < 0)
 			throw new MissingRequiredConfiguration("The value " + order + " is not a valid order for the file. This must be a positive integer.");
-		return new MigrationFile(order, md5Sum, statements, keyspace);
+		return new MigrationFile(order, description, statements, keyspace);
 	}
 
 	private <T> T findValueForKey(List<String> configurationLines, String key, Class<T> clazz)
@@ -160,17 +167,6 @@ public class MigrationFileTransformer {
 			}
 		}
 		throw new MissingRequiredConfiguration("The key " + key + " is not provided");
-	}
-
-	private String getMd5Sum(List<String> configurationLines, List<String> migrationLines) {
-		StringBuilder builder = new StringBuilder();
-		for (String configurationLine : configurationLines) {
-			builder.append(configurationLine);
-		}
-		for (String migrationLine : migrationLines) {
-			builder.append(migrationLine);
-		}
-		return DigestUtils.md5Hex(builder.toString());
 	}
 
 }

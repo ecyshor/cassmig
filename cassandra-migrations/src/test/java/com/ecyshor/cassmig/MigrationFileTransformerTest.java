@@ -27,4 +27,19 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 		assertThat(schemaForMigrationTable, equalTo("CREATE TABLE test_keyspace.migrations (  schema varchar,  order bigint,  time_executed timestamp,  md5sum text,  PRIMARY KEY (schema, time_executed, order));"));
 	}
 
+	@Test
+	public void shouldReturnNormalMigrationFile() throws URISyntaxException {
+		URL resource = this.getClass().getClassLoader().getResource("migrations/example_migration_file.cql");
+		assert resource != null;
+		File file = new File(resource.toURI());
+		MigrationFile migrationFile = transformMigrationFileToMigration(file);
+		assertThat(migrationFile.getOrder(), equalTo(1));
+		assertThat(migrationFile.getCommands(), hasSize(2));
+		assertThat(migrationFile.getDescription(), equalTo("Description"));
+		String keyspaceCommand = migrationFile.getCommands().get(0);
+		String migration = migrationFile.getCommands().get(1);
+		assertThat(keyspaceCommand, equalTo("USE test;"));
+		assertThat(migration, equalTo("migrate this is a test;"));
+	}
+
 }

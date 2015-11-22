@@ -4,6 +4,7 @@ public abstract class BaseMigration {
 	protected String schema = "default";
 	protected String md5Sum;
 	protected int order;
+	protected String description;
 
 	public String getMd5Sum() {
 		return md5Sum;
@@ -15,5 +16,9 @@ public abstract class BaseMigration {
 
 	public String getSchema() {
 		return schema;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }

@@ -1,8 +1,8 @@
---order
---keyspace
---description
+--order=1
+--keyspace=test
+--description=Description
 --start
 
-migrate
+migrate this is a test;
 
 --end
