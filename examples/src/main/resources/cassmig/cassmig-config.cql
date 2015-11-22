@@ -1,0 +1,2 @@
+--parent_keyspace=test_keyspace
+--migration_init
