@@ -1,0 +1,5 @@
+cassandraMig:
+  image: cassandra:2.0.14
+  ports:
+    - "9160:9160"
+    - "9042:9042"
