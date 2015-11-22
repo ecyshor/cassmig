@@ -1,5 +1,6 @@
 package com.ecyshor.cassmig;
 
+import com.ecyshor.cassmig.exception.InvalidDataException;
 import com.ecyshor.cassmig.exception.InvalidMigrationsException;
 import com.ecyshor.cassmig.exception.MissingRequiredConfiguration;
 import com.ecyshor.cassmig.model.MigrationFile;
@@ -83,6 +84,18 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 	@Test(expected = MissingRequiredConfiguration.class)
 	public void shouldThrowExceptionWhenMissingMigrationEnd() throws Throwable {
 		URL resource = this.getClass().getClassLoader().getResource("migrations/file_without_end_migration.cql");
+		assert resource != null;
+		File file = new File(resource.toURI());
+		try {
+			transformMigrationFileToMigration(file);
+		} catch (Exception e) {
+			throw e.getCause();
+		}
+	}
+
+	@Test(expected = InvalidDataException.class)
+	public void shouldThrowExceptionWhenOrderHasNegativeValue() throws Throwable {
+		URL resource = this.getClass().getClassLoader().getResource("migrations/file_with_negative_order.cql");
 		assert resource != null;
 		File file = new File(resource.toURI());
 		try {

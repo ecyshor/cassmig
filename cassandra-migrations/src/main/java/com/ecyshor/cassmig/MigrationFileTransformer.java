@@ -8,6 +8,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.omg.CORBA.DynAnyPackage.Invalid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +152,7 @@ public class MigrationFileTransformer {
 		String keyspace = findValueForKey(configurationLines, KEYSPACE_KEY);
 		String description = findValueForKey(configurationLines, DESCRIPTION_KEY);
 		if (order < 0)
-			throw new MissingRequiredConfiguration("The value " + order + " is not a valid order for the file. This must be a positive integer.");
+			throw new InvalidDataException("The value " + order + " is not a valid order for the file. This must be a positive integer.");
 		return new MigrationFile(order, description, statements, keyspace);
 	}
 
@@ -165,12 +166,12 @@ public class MigrationFileTransformer {
 		for (String configurationLine : configurationLines) {
 			String completeKey = key + VALUE_SEPARATOR;
 			if (configurationLine.startsWith(completeKey)) {
-				String keyspace = configurationLine.replace(completeKey, "").trim();
-				if (org.apache.commons.lang3.StringUtils.isEmpty(keyspace)) {
+				String valueForKey = configurationLine.replace(completeKey, "").trim();
+				if (org.apache.commons.lang3.StringUtils.isEmpty(valueForKey)) {
 					throw new MissingRequiredConfiguration("The key " + key + " is provided but does not have a value.");
 				}
 				configurationLines.remove(configurationLine);
-				return keyspace;
+				return valueForKey;
 			}
 		}
 		throw new MissingRequiredConfiguration("The key " + key + " is not provided");
