@@ -21,9 +21,19 @@ public class CassandraMigratorIntTest {
 
 	@Test
 	public void shouldMigrateTheSchema() {
-		migrator.migrate("integration");
+		migrator.migrate("migrations/integration");
 		session.execute("SELECT pepper from marguerita.drinks_2");
 		session.execute("SELECT * FROM marguerita.drinks");
+	}
+
+	@Test
+	public void shouldDoNothingWhenMigratingTheSecondTime() {
+		migrator.migrate("migrations/integration");
+	}
+
+	@Test
+	public void shouldRunOnlyTheNewMigration(){
+		migrator.migrate("migrations/integration2");
 	}
 
 }

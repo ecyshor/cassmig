@@ -72,7 +72,7 @@ public class MigrationFileTransformer {
 				break;
 			}
 			if (startedMigrationLines) {
-				migrationLines.add(trimmedLine);
+				migrationLines.add(line);
 			}
 			if (trimmedLine.equalsIgnoreCase(CONFIGURATION_OPTION_PREFIX + MIGRATION_START_MARK)) {
 				startedMigrationLines = true;

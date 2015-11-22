@@ -1,7 +1,7 @@
-CREATE TABLE %s.migrations (
-  schema varchar,
-  order bigint,
+CREATE TABLE %s.migrations(
+  migration_schema varchar,
+  migration_order bigint,
   time_executed timestamp,
   md5sum text,
-  PRIMARY KEY (schema, time_executed, order)
+  PRIMARY KEY (migration_schema, time_executed, migration_order)
 );

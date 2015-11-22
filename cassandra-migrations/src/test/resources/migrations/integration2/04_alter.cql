@@ -1,8 +1,8 @@
---order=3
+--order=4
 --keyspace=marguerita
 --description=Create the first table
 --start
 
-ALTER TABLE drinks_2 RENAME salt TO pepper;
+ALTER TABLE drinks_2 RENAME pepper TO salt;
 
 --end
