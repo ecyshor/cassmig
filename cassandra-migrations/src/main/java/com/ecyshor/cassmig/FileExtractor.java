@@ -1,5 +1,6 @@
 package com.ecyshor.cassmig;
 
+import com.ecyshor.cassmig.model.MigrationComparator;
 import com.ecyshor.cassmig.model.MigrationFile;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
@@ -13,7 +14,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.apache.commons.io.filefilter.FileFileFilter.FILE;
@@ -36,11 +36,7 @@ public class FileExtractor {
 			Collection<File> files = FileUtils.listFiles(file, new AndFileFilter(Lists.asList(CanReadFileFilter.CAN_READ,
 					new SuffixFileFilter(".cql"), new IOFileFilter[] {FILE})), FalseFileFilter.FALSE);
 			List<MigrationFile> migrationFiles = migrationFileTransformer.transformFilesToMigrations(files);
-			Collections.sort(migrationFiles, new Comparator<MigrationFile>() {
-				public int compare(MigrationFile migrationFile, MigrationFile secondMigrationFile) {
-					return Integer.compare(migrationFile.getOrder(), secondMigrationFile.getOrder());
-				}
-			});
+			Collections.sort(migrationFiles, MigrationComparator.getInstance());
 			return migrationFiles;
 		}
 		throw new IllegalArgumentException("The configured folder " + path + " for the migration is not correct.");

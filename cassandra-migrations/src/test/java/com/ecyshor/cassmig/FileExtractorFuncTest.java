@@ -28,5 +28,4 @@ public class FileExtractorFuncTest {
 	public void shouldThrowExceptionWhenInitFileIsMissing() throws IOException, URISyntaxException {
 		fileExtractor.getMigrationFiles("migrations/invalid");
 	}
-
 }
