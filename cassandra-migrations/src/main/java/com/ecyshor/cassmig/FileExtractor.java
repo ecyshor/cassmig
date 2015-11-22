@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.apache.commons.io.filefilter.FileFileFilter.FILE;
@@ -27,12 +29,19 @@ public class FileExtractor {
 
 	public List<MigrationFile> getMigrationFiles(String path)
 			throws IOException, URISyntaxException {
+		LOGGER.info("Finding migration files in path {}.", path);
 		URL resource = this.getClass().getClassLoader().getResource(path);
 		if (resource != null) {
 			File file = new File(resource.toURI());
 			Collection<File> files = FileUtils.listFiles(file, new AndFileFilter(Lists.asList(CanReadFileFilter.CAN_READ,
 					new SuffixFileFilter(".cql"), new IOFileFilter[] {FILE})), FalseFileFilter.FALSE);
-			return migrationFileTransformer.transformFilesToMigrations(files);
+			List<MigrationFile> migrationFiles = migrationFileTransformer.transformFilesToMigrations(files);
+			Collections.sort(migrationFiles, new Comparator<MigrationFile>() {
+				public int compare(MigrationFile migrationFile, MigrationFile secondMigrationFile) {
+					return Integer.compare(migrationFile.getOrder(), secondMigrationFile.getOrder());
+				}
+			});
+			return migrationFiles;
 		}
 		throw new IllegalArgumentException("The configured folder " + path + " for the migration is not correct.");
 	}

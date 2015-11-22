@@ -156,6 +156,7 @@ public class MigrationFileTransformer {
 		return new MigrationFile(order, description, statements, keyspace);
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> T findValueForKey(List<String> configurationLines, String key, Class<T> clazz)
 			throws MissingRequiredConfiguration {
 		return (T) convert(findValueForKey(configurationLines, key), clazz);
