@@ -21,4 +21,13 @@ public abstract class BaseMigration {
 	public String getDescription() {
 		return description;
 	}
+
+	@Override public String toString() {
+		return "BaseMigration{" +
+				"schema='" + schema + '\'' +
+				", md5Sum='" + md5Sum + '\'' +
+				", order=" + order +
+				", description='" + description + '\'' +
+				'}';
+	}
 }

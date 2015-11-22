@@ -27,6 +27,13 @@ public class MigrationFile extends BaseMigration {
 		this.md5Sum = getMd5ForMigrationStatements();
 	}
 
+	public MigrationFile(int order, String description, String md5sum, List<String> commands) {
+		this.order = order;
+		this.description = description;
+		this.commands = commands;
+		this.md5Sum = md5sum;
+	}
+
 	public List<String> getCommands() {
 		List<String> finalCommands = Lists.newArrayList(commands);
 		if (hasKeyspaceSet) {
