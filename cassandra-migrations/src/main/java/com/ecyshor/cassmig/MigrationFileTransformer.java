@@ -6,9 +6,7 @@ import com.ecyshor.cassmig.exception.MissingRequiredConfiguration;
 import com.ecyshor.cassmig.model.MigrationFile;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
-import org.omg.CORBA.DynAnyPackage.Invalid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +135,7 @@ public class MigrationFileTransformer {
 			String description = findValueForKey(configurationLines, DESCRIPTION_KEY);
 			migrationTableStatements.set(0, String.format(migrationTableStatements.get(0), keyspace));
 			migrations.addAll(migrationTableStatements);
-			return new MigrationFile(-1, description, migrations);
+			return new MigrationFile(-1, description, migrations, keyspace, false);
 		} catch (IOException e) {
 			String exceptionMessage = "Exception while trying to read the schema for the migration table. The migrations will be aborted.";
 			LOGGER.error(exceptionMessage, e);

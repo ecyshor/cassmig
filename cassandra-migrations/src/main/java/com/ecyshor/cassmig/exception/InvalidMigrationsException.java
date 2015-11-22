@@ -9,4 +9,8 @@ public class InvalidMigrationsException extends RuntimeException {
 	public InvalidMigrationsException(String message) {
 		super(message);
 	}
+
+	public InvalidMigrationsException(Throwable cause) {
+		super(cause);
+	}
 }

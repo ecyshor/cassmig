@@ -31,7 +31,7 @@ public class MigrationDAOTest {
 
 	@Before
 	public void setUp() throws Exception {
-		migrationDAO = new MigrationDAO(session, KEYSPACE);
+		migrationDAO = new MigrationDAO(session);
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class MigrationDAOTest {
 		when(mockRow.getString("md5sum")).thenReturn(md5sum);
 		Date executed = new Date();
 		when(mockRow.getDate("time_executed")).thenReturn(executed);
-		List<AppliedMigration> appliedMigrations = migrationDAO.getAppliedMigrations();
+		List<AppliedMigration> appliedMigrations = migrationDAO.getAppliedMigrations(KEYSPACE);
 		assertThat(appliedMigrations, hasSize(1));
 		AppliedMigration appliedMigration = appliedMigrations.get(0);
 		assertThat(appliedMigration.getTimeExecutedAsJavaDate(), equalTo(executed));
