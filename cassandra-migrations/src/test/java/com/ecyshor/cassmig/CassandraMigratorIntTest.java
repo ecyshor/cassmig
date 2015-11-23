@@ -3,8 +3,10 @@ package com.ecyshor.cassmig;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class CassandraMigratorIntTest {
 
 	private static final String CASSANDRA_HOST = "localhost";
@@ -32,7 +34,7 @@ public class CassandraMigratorIntTest {
 	}
 
 	@Test
-	public void shouldRunOnlyTheNewMigration(){
+	public void shouldRunOnlyTheNewMigration() {
 		migrator.migrate("migrations/integration2");
 	}
 

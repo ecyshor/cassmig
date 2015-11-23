@@ -26,8 +26,8 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 		assertThat(initFile.getCommands(), hasSize(2));
 		String initCommandsReceived = initFile.getCommands().get(0);
 		String schemaForMigrationTable = initFile.getCommands().get(1);
-		assertThat(initCommandsReceived, equalTo("CREATE KEYSPACE test_keyspace;"));
-		assertThat(schemaForMigrationTable, equalTo("CREATE TABLE test_keyspace.migrations (  schema varchar,  order bigint,  time_executed timestamp,  md5sum text,  PRIMARY KEY (schema, time_executed, order));"));
+		assertThat(initCommandsReceived, equalTo("    CREATE KEYSPACE test_keyspace;"));
+		assertThat(schemaForMigrationTable, equalTo("CREATE TABLE test_keyspace.migrations(  migration_schema varchar,  migration_order bigint,  time_executed timestamp,  md5sum text,  PRIMARY KEY (migration_schema, time_executed, migration_order));"));
 	}
 
 	@Test
