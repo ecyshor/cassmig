@@ -17,17 +17,15 @@ public class CassandraMigrator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CassandraMigrator.class);
 
-	private Session session;
 	private FileExtractor fileExtractor;
 	private MigrationService migrationService;
 
 	public CassandraMigrator(Session session) {
-		this(session, new FileExtractor(new MigrationFileTransformer()), new MigrationService(new MigrationValidator(), new MigrationDAO(session)));
+		this(new FileExtractor(new MigrationFileTransformer()), new MigrationService(new MigrationValidator(), new MigrationDAO(session)));
 	}
 
-	CassandraMigrator(Session session, FileExtractor fileExtractor, MigrationService migrationService) {
+	CassandraMigrator(FileExtractor fileExtractor, MigrationService migrationService) {
 		DateTimeZone.setDefault(DateTimeZone.UTC);
-		this.session = session;
 		this.fileExtractor = fileExtractor;
 		this.migrationService = migrationService;
 	}
