@@ -1,6 +1,13 @@
 # cassmig
 Cassadra java schema migrator that uses the datastax driver and requires a datastax Session
 ##Usage
+```
+<dependency>
+    <groupId>com.github.ecyshor</groupId>
+    <artifactId>cassandra-migration</artifactId>
+    <version>1.0.1</version>
+</dependency>
+```
 ###Create the migration files
 The migration files are of two types:
 ####Initialization file:
