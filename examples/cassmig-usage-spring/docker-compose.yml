@@ -1,0 +1,12 @@
+cassandra:
+  image: spotify/cassandra
+  expose:
+    - "9160"
+    - "9042"
+  ports:
+    - "9160:9160"
+    - "9042:9042"
+service:
+  build: .
+  links:
+    - cassandra
