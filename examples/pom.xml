@@ -2,14 +2,44 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>cassmig</artifactId>
-        <groupId>com.github.ecyshor</groupId>
-        <version>1.0.0</version>
-    </parent>
+    <artifactId>cassmig-usage</artifactId>
+    <packaging>pom</packaging>
+    <groupId>com.github.ecyshor</groupId>
+    <version>1.0.0</version>
     <modelVersion>4.0.0</modelVersion>
+    <modules>
 
-    <artifactId>migration-example</artifactId>
-
-
+        <module>cassmig-usage-spring</module>
+        <module>cassmig-external-usage</module>
+    </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19</version>
+                <configuration>
+                    <runOrder>alphabetical</runOrder>
+                    <failIfNoTests>false</failIfNoTests>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <includes>
+                                <include>**/*Test</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*IntTest</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

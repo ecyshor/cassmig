@@ -1,6 +1,6 @@
 # cassmig
 Cassadra java schema migrator that uses the datastax driver and requires a datastax Session
-##Usage
+##Maven dependency
 ```
 <dependency>
     <groupId>com.github.ecyshor</groupId>
@@ -8,7 +8,7 @@ Cassadra java schema migrator that uses the datastax driver and requires a datas
     <version>1.0.1</version>
 </dependency>
 ```
-###Create the migration files
+##Migration files
 The migration files are of two types:
 ####Initialization file:
 This contains all the cql queries that must be executed before creating the migrations table.
@@ -43,7 +43,9 @@ CREATE TABLE drinks (
 ```
 We can have any number of normal migration files
 
-###Use the cassandra migrator
+##Usage
+
+###To migrate using files found in your project/module 
 ```
 CassandraMigrator migrator = new CassandraMigrator(session);
 migrator.migrate("migrations");
@@ -51,3 +53,13 @@ migrator.migrate("migrations");
 
 The "migrations" folder must be in the classpath, preferably resources folder. All the migration files must be there.
 The required session is of type `com.datastax.driver.core.Session;`
+
+###To migrate using files found in external modules/dependencies
+```
+CassandraMigrator migrator = new CassandraMigrator(session);
+migrator.migrateExternal("com.example","migrations");
+```
+
+ - "migrations" represents the prefix for the migrations files that should be searched. If in an external dependency,
+ this should be the folder where the files are located. Please take note that this should be the `prefix`
+ - "com.example" represents the packages prefix for libraries where we should scan for files. 

@@ -52,7 +52,7 @@ public class CassandraMigrator {
 	}
 
 	public void migrateExternal(ExternalMigrationConfig... externalMigrations) {
-		LOGGER.info("Migrating external migrations for configurations {}", externalMigrations);
+		LOGGER.info("Migrating external migrations for configurations {}", new Object[] {externalMigrations});
 		for (ExternalMigrationConfig externalMigration : externalMigrations) {
 			migrateExternalConfiguration(externalMigration);
 		}
