@@ -1,14 +1,12 @@
 package com.ecyshor.cassmig;
 
 import com.ecyshor.cassmig.exception.InvalidDataException;
-import com.ecyshor.cassmig.exception.InvalidMigrationsException;
 import com.ecyshor.cassmig.exception.MissingRequiredConfiguration;
 import com.ecyshor.cassmig.model.MigrationFile;
 import org.junit.Test;
 
-import java.io.File;
+import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,11 +16,9 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 
 	@Test
 	public void shouldReturnInitializationFile() throws URISyntaxException {
-		URL resource = this.getClass().getClassLoader().getResource("migrations/test_init_file.cql");
-		assert resource != null;
-		File file = new File(resource.toURI());
-		MigrationFile initFile = transformMigrationFileToMigration(file);
-		assertThat(initFile.getOrder(), equalTo(-1));
+		InputStream resource = getResourceAsStream("migrations/test_init_file.cql");
+		MigrationFile initFile = transformMigrationFileToMigration(resource);
+		assertThat(initFile.getOrder(), equalTo(-100));
 		assertThat(initFile.getCommands(), hasSize(2));
 		String initCommandsReceived = initFile.getCommands().get(0);
 		String schemaForMigrationTable = initFile.getCommands().get(1);
@@ -32,10 +28,8 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 
 	@Test
 	public void shouldReturnNormalMigrationFile() throws URISyntaxException {
-		URL resource = this.getClass().getClassLoader().getResource("migrations/example_migration_file.cql");
-		assert resource != null;
-		File file = new File(resource.toURI());
-		MigrationFile migrationFile = transformMigrationFileToMigration(file);
+		InputStream resource = getResourceAsStream("migrations/example_migration_file.cql");
+		MigrationFile migrationFile = transformMigrationFileToMigration(resource);
 		assertThat(migrationFile.getOrder(), equalTo(1));
 		assertThat(migrationFile.getCommands(), hasSize(2));
 		assertThat(migrationFile.getDescription(), equalTo("Description"));
@@ -47,11 +41,9 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 
 	@Test(expected = MissingRequiredConfiguration.class)
 	public void shouldThrowExceptionWhenMissingConfigurationInFile() throws Throwable {
-		URL resource = this.getClass().getClassLoader().getResource("migrations/file_without_order.cql");
-		assert resource != null;
-		File file = new File(resource.toURI());
+		InputStream resource = getResourceAsStream("migrations/file_without_order.cql");
 		try {
-			transformMigrationFileToMigration(file);
+			transformMigrationFileToMigration(resource);
 		} catch (Exception e) {
 			throw e.getCause();
 		}
@@ -59,11 +51,9 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 
 	@Test(expected = MissingRequiredConfiguration.class)
 	public void shouldThrowExceptionWhenMissingValueForConfigurationInFile() throws Throwable {
-		URL resource = this.getClass().getClassLoader().getResource("migrations/file_with_empty_order.cql");
-		assert resource != null;
-		File file = new File(resource.toURI());
+		InputStream resource = getResourceAsStream("migrations/file_with_empty_order.cql");
 		try {
-			transformMigrationFileToMigration(file);
+			transformMigrationFileToMigration(resource);
 		} catch (Exception e) {
 			throw e.getCause();
 		}
@@ -71,11 +61,10 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 
 	@Test(expected = MissingRequiredConfiguration.class)
 	public void shouldThrowExceptionWhenMissingMigrationStart() throws Throwable {
-		URL resource = this.getClass().getClassLoader().getResource("migrations/file_without_start_migration.cql");
+		InputStream resource = getResourceAsStream("migrations/file_without_start_migration.cql");
 		assert resource != null;
-		File file = new File(resource.toURI());
 		try {
-			transformMigrationFileToMigration(file);
+			transformMigrationFileToMigration(resource);
 		} catch (Exception e) {
 			throw e.getCause();
 		}
@@ -83,11 +72,9 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 
 	@Test(expected = MissingRequiredConfiguration.class)
 	public void shouldThrowExceptionWhenMissingMigrationEnd() throws Throwable {
-		URL resource = this.getClass().getClassLoader().getResource("migrations/file_without_end_migration.cql");
-		assert resource != null;
-		File file = new File(resource.toURI());
+		InputStream resource = getResourceAsStream("migrations/file_without_end_migration.cql");
 		try {
-			transformMigrationFileToMigration(file);
+			transformMigrationFileToMigration(resource);
 		} catch (Exception e) {
 			throw e.getCause();
 		}
@@ -95,14 +82,16 @@ public class MigrationFileTransformerTest extends MigrationFileTransformer {
 
 	@Test(expected = InvalidDataException.class)
 	public void shouldThrowExceptionWhenOrderHasNegativeValue() throws Throwable {
-		URL resource = this.getClass().getClassLoader().getResource("migrations/file_with_negative_order.cql");
-		assert resource != null;
-		File file = new File(resource.toURI());
+		InputStream resource = getResourceAsStream("migrations/file_with_negative_order.cql");
 		try {
-			transformMigrationFileToMigration(file);
+			transformMigrationFileToMigration(resource);
 		} catch (Exception e) {
 			throw e.getCause();
 		}
+	}
+
+	private InputStream getResourceAsStream(String filePath) {
+		return this.getClass().getClassLoader().getResourceAsStream(filePath);
 	}
 
 }

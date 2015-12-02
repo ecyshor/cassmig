@@ -13,6 +13,8 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
+import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
+
 public class MigrationDAO {
 
 	public static final String MIGRATIONS_TABLE = "migrations";
@@ -23,11 +25,11 @@ public class MigrationDAO {
 		this.session = session;
 	}
 
-	public List<AppliedMigration> getAppliedMigrations(String keyspace) {
+	public List<AppliedMigration> getAppliedMigrations(String keyspace, String schema) {
 		KeyspaceMetadata keyspaceMetadata = session.getCluster().getMetadata().getKeyspace(keyspace);
 		if (keyspaceMetadata != null) {
 			if (keyspaceMetadata.getTable(MIGRATIONS_TABLE) != null) {
-				Select migrationQuery = QueryBuilder.select().from(keyspace, MIGRATIONS_TABLE);
+				Select.Where migrationQuery = QueryBuilder.select().from(keyspace, MIGRATIONS_TABLE).where(eq("migration_schema", schema));
 				List<Row> allMigrations = session.execute(migrationQuery).all();
 				return MigrationMapper.map(allMigrations);
 			}

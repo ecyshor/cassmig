@@ -56,7 +56,7 @@ public class MigrationDAOTest {
 		when(mockRow.getString("md5sum")).thenReturn(md5sum);
 		Date executed = new Date();
 		when(mockRow.getDate("time_executed")).thenReturn(executed);
-		List<AppliedMigration> appliedMigrations = migrationDAO.getAppliedMigrations(KEYSPACE);
+		List<AppliedMigration> appliedMigrations = migrationDAO.getAppliedMigrations(KEYSPACE, "default");
 		assertThat(appliedMigrations, hasSize(1));
 		AppliedMigration appliedMigration = appliedMigrations.get(0);
 		assertThat(appliedMigration.getTimeExecutedAsJavaDate(), equalTo(executed));

@@ -26,7 +26,7 @@ public class MigrationService {
 	public void applyMigrations(List<MigrationFile> migrations) {
 		LOGGER.debug("Applying migrations {}.", migrations);
 		MigrationFile initializationFile = MigrationFiles.getInitializationFile(migrations);
-		List<AppliedMigration> appliedMigrations = migrationDAO.getAppliedMigrations(initializationFile.getUsedKeyspace());
+		List<AppliedMigration> appliedMigrations = migrationDAO.getAppliedMigrations(initializationFile.getUsedKeyspace(), initializationFile.getSchema());
 		LOGGER.debug("The migrations {} already have been applied.", appliedMigrations);
 		migrationValidator.validateMigrations(appliedMigrations, migrations);
 		List<MigrationFile> migrationFiles = extractMigrationsThatHaveToBeApplied(appliedMigrations, migrations);

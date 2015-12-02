@@ -15,7 +15,7 @@ public class MigrationMapper {
 		LOGGER.debug("Mapping casssandra rows to applied migrations.");
 		List<AppliedMigration> appliedMigrations = Lists.newArrayList();
 		for (Row row : rows) {
-			appliedMigrations.add(new AppliedMigration((int) row.getLong("migration_order"), row.getString("md5sum"),
+			appliedMigrations.add(new AppliedMigration(row.getString("migration_schema"), (int) row.getLong("migration_order"), row.getString("md5sum"),
 					row.getDate("time_executed")));
 		}
 		return appliedMigrations;

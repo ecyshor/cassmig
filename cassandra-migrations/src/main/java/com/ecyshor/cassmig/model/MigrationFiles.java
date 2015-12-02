@@ -10,11 +10,11 @@ public class MigrationFiles {
 	public static MigrationFile getInitializationFile(List<MigrationFile> migrationFiles) {
 		Collections.sort(migrationFiles, MigrationComparator.getInstance());
 		for (MigrationFile migrationFile : migrationFiles) {
-			if (migrationFile.getOrder() == -1) {
+			if (migrationFile.getOrder() == -100) {
 				return migrationFile;
 			}
 		}
-		throw new InvalidDataException("Could not provide the initialization file");
+		throw new InvalidDataException("Could not find initialization file from the migration files.");
 	}
 
 }

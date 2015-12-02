@@ -1,7 +1,7 @@
 package com.ecyshor.cassmig.model;
 
 public abstract class BaseMigration {
-	protected String schema = "default";
+	protected String schema;
 	protected String md5Sum;
 	protected int order;
 	protected String description;

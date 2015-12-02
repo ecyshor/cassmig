@@ -3,6 +3,7 @@ package com.ecyshor.cassmig;
 import com.ecyshor.cassmig.exception.InvalidDataException;
 import com.ecyshor.cassmig.exception.InvalidMigrationsException;
 import com.ecyshor.cassmig.exception.MissingRequiredConfiguration;
+import com.ecyshor.cassmig.migration.MigrationExtractor;
 import com.ecyshor.cassmig.model.MigrationFile;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
@@ -10,8 +11,9 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.Collection;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +21,7 @@ import static org.apache.commons.beanutils.ConvertUtils.convert;
 
 public class MigrationFileTransformer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileExtractor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationExtractor.class);
 	private static final String MIGRATION_START_MARK = "start";
 	private static final String MIGRATION_END_MARK = "end";
 	private static final String CONFIGURATION_OPTION_PREFIX = "--";
@@ -30,9 +32,9 @@ public class MigrationFileTransformer {
 	private static final String VALUE_SEPARATOR = "=";
 	private boolean foundInitFile = false;
 
-	public List<MigrationFile> transformFilesToMigrations(Collection<File> files) {
+	public List<MigrationFile> transformFilesToMigrations(List<InputStream> files) {
 		List<MigrationFile> migrations = new LinkedList<MigrationFile>();
-		for (File migrationFile : files) {
+		for (InputStream migrationFile : files) {
 			MigrationFile migration = transformMigrationFileToMigration(migrationFile);
 			migrations.add(migration);
 		}
@@ -42,20 +44,20 @@ public class MigrationFileTransformer {
 		return migrations;
 	}
 
-	public MigrationFile transformMigrationFileToMigration(File migrationFile) {
+	public MigrationFile transformMigrationFileToMigration(InputStream migrationFile) {
 		try {
 			List<String> lines = readLinesForFile(migrationFile);
 			List<String> configurationLines = extractConfigurationLines(lines);
 			List<String> migrationLines = extractMigrationLines(lines);
 			return transformFileContentToMigration(configurationLines, migrationLines);
 		} catch (MissingRequiredConfiguration missingRequiredConfiguration) {
-			String exceptionMessage = "Invalid file " + migrationFile.getName() + " for migration";
+			String exceptionMessage = "Invalid file for migration";
 			LOGGER.error(exceptionMessage, missingRequiredConfiguration);
 			throw new InvalidMigrationsException(exceptionMessage, missingRequiredConfiguration);
 		} catch (FileNotFoundException e) {
 			throw Throwables.propagate(e);
 		} catch (InvalidDataException ex) {
-			String exceptionMessage = "Invalid file " + migrationFile.getName() + " for migration";
+			String exceptionMessage = "Invalid file for migration";
 			LOGGER.error(exceptionMessage, ex);
 			throw new InvalidMigrationsException(exceptionMessage, ex);
 		}
@@ -101,16 +103,15 @@ public class MigrationFileTransformer {
 		return configurationLines;
 	}
 
-	private List<String> readLinesForFile(File migrationFile) throws FileNotFoundException {
-		FileInputStream input = new FileInputStream(migrationFile);
+	private List<String> readLinesForFile(InputStream migrationFile) throws FileNotFoundException {
 		try {
-			return IOUtils.readLines(input);
+			return IOUtils.readLines(migrationFile);
 		} catch (IOException e) {
-			String exceptionMessage = "Exception while reading migration file " + migrationFile.getName() + ". The migrations will be aborted.";
+			String exceptionMessage = "Exception while reading migration file";
 			LOGGER.error(exceptionMessage, e);
 			throw Throwables.propagate(e);
 		} finally {
-			IOUtils.closeQuietly(input);
+			IOUtils.closeQuietly(migrationFile);
 		}
 	}
 
@@ -135,7 +136,7 @@ public class MigrationFileTransformer {
 			String description = findValueForKey(configurationLines, DESCRIPTION_KEY);
 			migrationTableStatements.set(0, String.format(migrationTableStatements.get(0), keyspace));
 			migrations.addAll(migrationTableStatements);
-			return new MigrationFile(-1, description, migrations, keyspace, false);
+			return new MigrationFile(-100, description, migrations, keyspace, false);
 		} catch (IOException e) {
 			String exceptionMessage = "Exception while trying to read the schema for the migration table. The migrations will be aborted.";
 			LOGGER.error(exceptionMessage, e);
