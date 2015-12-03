@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -24,8 +23,7 @@ public class JarFileLoader implements FileLoader<ExternalMigrationConfig> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JarFileLoader.class);
 
-	public List<InputStream> loadFiles(@Nullable final ExternalMigrationConfig config)
-			throws URISyntaxException {
+	public List<InputStream> loadFiles(@Nullable final ExternalMigrationConfig config) {
 		assert config != null;
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setScanners(new ResourcesScanner())

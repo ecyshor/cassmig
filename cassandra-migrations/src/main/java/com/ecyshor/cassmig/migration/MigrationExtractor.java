@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,19 +30,18 @@ public class MigrationExtractor {
 	}
 
 	public List<MigrationFile> getMigrationFiles(String path)
-			throws IOException, URISyntaxException {
+			throws IOException {
 		return getMigrationFiles(new ModuleLoadingConfig(path));
 	}
 
 	public List<MigrationFile> getMigrationFiles(ModuleLoadingConfig config)
-			throws IOException, URISyntaxException {
+			throws IOException {
 		LOGGER.info("Finding migration files in config {}.", config);
 		List<InputStream> files = fileLoader.loadFiles(config);
 		return getMigrationFiles(files);
 	}
 
-	public List<MigrationFile> getMigrationFiles(ExternalMigrationConfig externalMigration)
-			throws URISyntaxException {
+	public List<MigrationFile> getMigrationFiles(ExternalMigrationConfig externalMigration) {
 		LOGGER.info("Finding migration files in config {}.", externalMigration);
 		List<InputStream> files = externalFileLoader.loadFiles(externalMigration);
 		List<MigrationFile> migrationFiles = getMigrationFiles(files);

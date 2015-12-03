@@ -45,13 +45,13 @@ We can have any number of normal migration files
 
 ##Usage
 
-###To migrate using files found in your project/module 
+###To migrate from a project which will not be used as a dependency by another project
 ```
 CassandraMigrator migrator = new CassandraMigrator(session);
 migrator.migrate("migrations");
 ```
 
-The "migrations" folder must be in the classpath, preferably resources folder. All the migration files must be there.
+The migrations will be loaded from the classpath.
 The required session is of type `com.datastax.driver.core.Session;`
 
 ###To migrate using files found in external modules/dependencies
@@ -59,7 +59,7 @@ The required session is of type `com.datastax.driver.core.Session;`
 CassandraMigrator migrator = new CassandraMigrator(session);
 migrator.migrateExternal("com.example","migrations");
 ```
-
+ - this uses reflection to search for the files
  - "migrations" represents the prefix for the migrations files that should be searched. If in an external dependency,
  this should be the folder where the files are located. Please take note that this should be the `prefix`
  - "com.example" represents the packages prefix for libraries where we should scan for files. 

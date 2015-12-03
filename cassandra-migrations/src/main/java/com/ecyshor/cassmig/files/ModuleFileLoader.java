@@ -1,5 +1,6 @@
 package com.ecyshor.cassmig.files;
 
+import com.ecyshor.cassmig.exception.ExternalMigrationException;
 import com.ecyshor.cassmig.model.ModuleLoadingConfig;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
@@ -24,10 +25,10 @@ public class ModuleFileLoader implements FileLoader<ModuleLoadingConfig> {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ModuleFileLoader.class);
 
-	public List<InputStream> loadFiles(ModuleLoadingConfig config) throws URISyntaxException {
+	public List<InputStream> loadFiles(ModuleLoadingConfig config){
 		URL resource = Thread.currentThread().getContextClassLoader().getResource(config.getPath());
 		if (resource != null) {
-			File file = new File(resource.toURI());
+			File file = getFileFromURL(resource);
 			Collection<File> files = FileUtils.listFiles(file, new AndFileFilter(Lists.asList(CanReadFileFilter.CAN_READ,
 					new SuffixFileFilter(".cql"), new IOFileFilter[] {FILE})), FalseFileFilter.FALSE);
 			return Lists.newArrayList(Iterables.transform(files, new Function<File, InputStream>() {
@@ -44,6 +45,16 @@ public class ModuleFileLoader implements FileLoader<ModuleLoadingConfig> {
 			}));
 		}
 		throw new IllegalArgumentException("The configured folder " + config.getPath() + " for the migration is not correct.");
+	}
+
+	private File getFileFromURL(URL resource) {
+		try {
+			return new File(resource.toURI());
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalArgumentException ex) {
+			throw new ExternalMigrationException(ex.getMessage());
+		}
 	}
 
 }

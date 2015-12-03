@@ -1,6 +1,7 @@
 package com.ecyshor.cassmig;
 
 import com.datastax.driver.core.Session;
+import com.ecyshor.cassmig.exception.ExternalMigrationException;
 import com.ecyshor.cassmig.exception.InvalidMigrationsException;
 import com.ecyshor.cassmig.files.JarFileLoader;
 import com.ecyshor.cassmig.files.ModuleFileLoader;
@@ -14,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 public class CassandraMigrator {
@@ -35,7 +35,7 @@ public class CassandraMigrator {
 	}
 
 	/***
-	 * @throws InvalidMigrationsException Something happend trying to migrate
+	 * @throws InvalidMigrationsException Something happened trying to migrate
 	 */
 	public void migrate(String migrationFilesPath) {
 		try {
@@ -45,9 +45,9 @@ public class CassandraMigrator {
 		} catch (IOException e) {
 			LOGGER.error("Exception while migrating schema.", e);
 			throw new InvalidMigrationsException(e);
-		} catch (URISyntaxException e) {
-			LOGGER.error("Exception while migrating schema.", e);
-			throw new InvalidMigrationsException(e);
+		} catch (ExternalMigrationException e) {
+			LOGGER.info("Trying to migrate schema without calling for external migrations. If you want to migrate"
+					+ " this schema please call the migration explicitly.");
 		}
 	}
 
@@ -63,9 +63,6 @@ public class CassandraMigrator {
 			List<MigrationFile> migrationFiles = migrationExtractor.getMigrationFiles(externalMigration);
 			migrationService.applyMigrations(migrationFiles);
 		} catch (InvalidMigrationsException e) {
-			LOGGER.error("Exception while migrating schema for external migration " + externalMigration, e);
-			throw new InvalidMigrationsException(e);
-		} catch (URISyntaxException e) {
 			LOGGER.error("Exception while migrating schema for external migration " + externalMigration, e);
 			throw new InvalidMigrationsException(e);
 		}
