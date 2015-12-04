@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.ecyshor</groupId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
     <artifactId>cassandra-migration</artifactId>
 
     <name>Cassmig</name>
@@ -42,7 +42,7 @@
         <connection>scm:git:git@github.com:ecyshor/cassmig.git</connection>
         <developerConnection>scm:git:git@github.com:ecyshor/cassmig.git</developerConnection>
         <url>http://github.com/ecyshor/cassmig</url>
-        <tag>HEAD</tag>
+        <tag>cassandra-migration-1.1.2</tag>
     </scm>
     <properties>
         <project.scm.id>github</project.scm.id>
