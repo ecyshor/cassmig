@@ -5,7 +5,7 @@ Cassadra java schema migrator that uses the datastax driver and requires a datas
 <dependency>
     <groupId>com.github.ecyshor</groupId>
     <artifactId>cassandra-migration</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.4</version>
 </dependency>
 ```
 ##Migration files
@@ -22,7 +22,7 @@ It has the following format:
     CREATE KEYSPACE marguerita WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};
 --end                                     #marks the end of the migrations queries
 ```
-
+Please make sure that the schema name that you provide is unique.
 All the keys presented are required.
 ####Migration files:
 These contain the actual migrations:
