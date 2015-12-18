@@ -44,16 +44,7 @@ public class MigrationExtractor {
 	public List<MigrationFile> getMigrationFiles(ExternalMigrationConfig externalMigration) {
 		LOGGER.info("Finding migration files in config {}.", externalMigration);
 		List<InputStream> files = externalFileLoader.loadFiles(externalMigration);
-		List<MigrationFile> migrationFiles = getMigrationFiles(files);
-		addSchemaToMigrationFiles(migrationFiles, externalMigration);
-		return migrationFiles;
-	}
-
-	private void addSchemaToMigrationFiles(List<MigrationFile> migrationFiles, ExternalMigrationConfig externalMigration) {
-		String schema = externalMigration.getPackagePrefix() + externalMigration.getMigrationFilesPrefix();
-		for (MigrationFile migrationFile : migrationFiles) {
-			migrationFile.setSchema(schema);
-		}
+		return getMigrationFiles(files);
 	}
 
 	private List<MigrationFile> getMigrationFiles(List<InputStream> files) {
