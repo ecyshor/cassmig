@@ -50,16 +50,12 @@ public class MigrationFileTransformer {
 			List<String> configurationLines = extractConfigurationLines(lines);
 			List<String> migrationLines = extractMigrationLines(lines);
 			return transformFileContentToMigration(configurationLines, migrationLines);
-		} catch (MissingRequiredConfiguration missingRequiredConfiguration) {
+		} catch (MissingRequiredConfiguration | InvalidDataException missingRequiredConfiguration) {
 			String exceptionMessage = "Invalid file for migration";
 			LOGGER.error(exceptionMessage, missingRequiredConfiguration);
 			throw new InvalidMigrationsException(exceptionMessage, missingRequiredConfiguration);
 		} catch (FileNotFoundException e) {
 			throw Throwables.propagate(e);
-		} catch (InvalidDataException ex) {
-			String exceptionMessage = "Invalid file for migration";
-			LOGGER.error(exceptionMessage, ex);
-			throw new InvalidMigrationsException(exceptionMessage, ex);
 		}
 	}
 
@@ -117,11 +113,12 @@ public class MigrationFileTransformer {
 
 	private MigrationFile transformFileContentToMigration(List<String> configurationLines, List<String> migrationLines)
 			throws MissingRequiredConfiguration {
-		if (configurationLines.contains(MIGRATION_INIT_KEY)) {
-			return transformFileContentToInitialization(configurationLines, migrationLines);
-		} else {
-			return transformFileContentToNormalMigrationFile(configurationLines, migrationLines);
+		for (String configurationLine : configurationLines) {
+			if (configurationLine.startsWith(MIGRATION_INIT_KEY  + VALUE_SEPARATOR)) {
+				return transformFileContentToInitialization(configurationLines, migrationLines);
+			}
 		}
+		return transformFileContentToNormalMigrationFile(configurationLines, migrationLines);
 	}
 
 	private MigrationFile transformFileContentToInitialization(List<String> configurationLines, List<String> migrationLines)
@@ -134,9 +131,10 @@ public class MigrationFileTransformer {
 			List<String> migrationTableStatements = StatementBuilder.buildStatementsFromLines(migrationTable);
 			String keyspace = findValueForKey(configurationLines, KEYSPACE_KEY);
 			String description = findValueForKey(configurationLines, DESCRIPTION_KEY);
+			String schema = findValueForKey(configurationLines, MIGRATION_INIT_KEY);
 			migrationTableStatements.set(0, String.format(migrationTableStatements.get(0), keyspace));
 			migrations.addAll(migrationTableStatements);
-			return new MigrationFile(-100, description, migrations, keyspace, false);
+			return new MigrationFile(schema, -100, description, migrations, keyspace, false);
 		} catch (IOException e) {
 			String exceptionMessage = "Exception while trying to read the schema for the migration table. The migrations will be aborted.";
 			LOGGER.error(exceptionMessage, e);

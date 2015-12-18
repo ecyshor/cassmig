@@ -16,7 +16,7 @@ Only one if these files must be configured.
 It has the following format:
 ```
 --keyspace=marguerita                     #the keyspace where the migrations table will be executed
---migration_init                          #marks that this is the initilization file
+--migration_init=public                   #marks that this is the initilization file and specifies the schema name
 --description=Initial keyspace creation   #description of the migration file
 --start                                   #marks the start of the migrations queries
     CREATE KEYSPACE marguerita WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};
