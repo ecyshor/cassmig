@@ -5,7 +5,7 @@ Cassadra java schema migrator that uses the datastax driver and requires a datas
 <dependency>
     <groupId>com.github.ecyshor</groupId>
     <artifactId>cassandra-migration</artifactId>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
 </dependency>
 ```
 ##Migration files
