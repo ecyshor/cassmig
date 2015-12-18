@@ -31,6 +31,7 @@ public class MigrationFileTransformer {
 	private static final String ORDER_KEY = "order";
 	private static final String VALUE_SEPARATOR = "=";
 	private boolean foundInitFile = false;
+	private static String schema;
 
 	public List<MigrationFile> transformFilesToMigrations(List<InputStream> files) {
 		List<MigrationFile> migrations = new LinkedList<MigrationFile>();
@@ -41,7 +42,14 @@ public class MigrationFileTransformer {
 		if (!foundInitFile) {
 			throw new InvalidMigrationsException("The initialization file was not provided. Please provide it.");
 		}
+		setSchemaToMigrations(migrations);
 		return migrations;
+	}
+
+	private void setSchemaToMigrations(List<MigrationFile> migrations) {
+		for (MigrationFile migration : migrations) {
+			migration.setSchema(schema);
+		}
 	}
 
 	public MigrationFile transformMigrationFileToMigration(InputStream migrationFile) {
@@ -114,7 +122,7 @@ public class MigrationFileTransformer {
 	private MigrationFile transformFileContentToMigration(List<String> configurationLines, List<String> migrationLines)
 			throws MissingRequiredConfiguration {
 		for (String configurationLine : configurationLines) {
-			if (configurationLine.startsWith(MIGRATION_INIT_KEY  + VALUE_SEPARATOR)) {
+			if (configurationLine.startsWith(MIGRATION_INIT_KEY + VALUE_SEPARATOR)) {
 				return transformFileContentToInitialization(configurationLines, migrationLines);
 			}
 		}
@@ -131,7 +139,7 @@ public class MigrationFileTransformer {
 			List<String> migrationTableStatements = StatementBuilder.buildStatementsFromLines(migrationTable);
 			String keyspace = findValueForKey(configurationLines, KEYSPACE_KEY);
 			String description = findValueForKey(configurationLines, DESCRIPTION_KEY);
-			String schema = findValueForKey(configurationLines, MIGRATION_INIT_KEY);
+			schema = findValueForKey(configurationLines, MIGRATION_INIT_KEY);
 			migrationTableStatements.set(0, String.format(migrationTableStatements.get(0), keyspace));
 			migrations.addAll(migrationTableStatements);
 			return new MigrationFile(schema, -100, description, migrations, keyspace, false);
